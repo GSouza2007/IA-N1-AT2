@@ -1,20 +1,3 @@
-/**
- * ============================================================
- * app.js — Orquestrador da Aplicação
- * ============================================================
- *
- * Gerencia a interface do usuário:
- *   - Controles de execução (automático, passo a passo, reset)
- *   - Seleção de heurística (original / modificada)
- *   - Log passo a passo com formatação rica
- *   - Exibição de resultados finais
- *   - Modo comparação lado a lado
- *   - Controle de velocidade da animação
- */
-
-// ──────────────────────────────────────────────
-// Estado global da aplicação
-// ──────────────────────────────────────────────
 let currentSearch = null;
 let currentHeuristic = 'original';
 let animationSpeed = 600; // ms
@@ -22,33 +5,25 @@ let isRunning = false;
 let resultadoOriginal = null;
 let resultadoModificado = null;
 
-// ──────────────────────────────────────────────
-// Inicialização
-// ──────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  // Inicializar grafo com heurística original
   initGraph('original');
   updateDashboardSummary();
   
-  // Event listeners dos botões
   document.getElementById('btn-auto').addEventListener('click', runAutomatic);
   document.getElementById('btn-step').addEventListener('click', runStep);
   document.getElementById('btn-reset').addEventListener('click', resetAll);
   document.getElementById('btn-compare').addEventListener('click', runComparison);
 
-  // Seletor de heurística
   document.getElementById('heuristic-select').addEventListener('change', (e) => {
     currentHeuristic = e.target.value;
     resetAll();
   });
 
-  // Controle de velocidade
   document.getElementById('speed-range').addEventListener('input', (e) => {
     animationSpeed = parseInt(e.target.value);
     document.getElementById('speed-value').textContent = `${animationSpeed}ms`;
   });
 
-  // Mostrar tabela de heurísticas
   renderHeuristicTable();
 });
 
@@ -86,25 +61,15 @@ function updateDashboardSummary(resultados = null) {
   }
 }
 
-/**
- * Inicializa o grafo com a heurística selecionada.
- * @param {string} type - 'original' ou 'modified'
- */
 function initGraph(type) {
   const heuristics = type === 'original' ? HEURISTICS_ORIGINAL : HEURISTICS_MODIFIED;
   initCytoscape('cy-container', heuristics);
 }
 
-/**
- * Retorna o mapa de heurísticas ativo.
- */
 function getActiveHeuristics() {
   return currentHeuristic === 'original' ? HEURISTICS_ORIGINAL : HEURISTICS_MODIFIED;
 }
 
-/**
- * Renderiza a tabela de heurísticas no painel lateral.
- */
 function renderHeuristicTable() {
   const tbody = document.getElementById('heuristic-tbody');
   if (!tbody) return;
@@ -132,9 +97,6 @@ function renderHeuristicTable() {
   lucide.createIcons();
 }
 
-/**
- * Retorna um ícone SVG (Lucide) representando o tipo de estado.
- */
 function getEstadoIcon(estado) {
   const icons = {
     'Base': '<i data-lucide="ambulance"></i>', 
@@ -152,10 +114,6 @@ function getEstadoIcon(estado) {
   };
   return icons[estado] || '<i data-lucide="map-pin"></i>';
 }
-
-// ──────────────────────────────────────────────
-// Execução Automática
-// ──────────────────────────────────────────────
 
 async function runAutomatic() {
   if (isRunning) return;
@@ -183,20 +141,16 @@ async function runAutomatic() {
 
     if (!passo) break;
 
-    // Animar no grafo
     await animateStep(passo, animationSpeed);
     await sleep(animationSpeed);
 
-    // Logar o passo
     logStep(stepCount, passo);
   }
 
-  // Resultados finais
   const resultados = currentSearch.getResultados();
   displayResults(resultados);
   updateDashboardSummary(resultados);
 
-  // Animar caminho final
   if (resultados.encontrou) {
     addLogDivider();
     addLogEntry('success', `<div class="log-entry-header"><i data-lucide="flag"></i> Caminho encontrado!</div>`);
@@ -204,7 +158,6 @@ async function runAutomatic() {
     await animatePath(resultados.caminho, 300);
   }
 
-  // Salvar resultado para comparação
   if (currentHeuristic === 'original') {
     resultadoOriginal = resultados;
   } else {
@@ -215,16 +168,11 @@ async function runAutomatic() {
   setButtonsEnabled(true, false);
 }
 
-// ──────────────────────────────────────────────
-// Execução Passo a Passo
-// ──────────────────────────────────────────────
-
 let stepCounter = 0;
 
 async function runStep() {
   if (isRunning) return;
 
-  // Inicializar busca se necessário
   if (!currentSearch || currentSearch.finalizado) {
     const heuristics = getActiveHeuristics();
     currentSearch = new HeuristicSearch(heuristics, ESTADO_INICIAL, ESTADO_OBJETIVO);
@@ -269,19 +217,13 @@ async function runStep() {
   isRunning = false;
 }
 
-// ──────────────────────────────────────────────
-// Reset
-// ──────────────────────────────────────────────
-
 function resetAll() {
   currentSearch = null;
   stepCounter = 0;
   isRunning = false;
 
-  // Reinicializar grafo
   initGraph(currentHeuristic === 'original' ? 'original' : 'modified');
 
-  // Limpar log e resultados
   clearLog();
   clearResults();
   updateDashboardSummary();
@@ -289,10 +231,6 @@ function resetAll() {
 
   addLogEntry('info', '<div class="log-entry-header"><i data-lucide="refresh-cw"></i> Sistema resetado. Pronto para nova execução.</div>');
 }
-
-// ──────────────────────────────────────────────
-// Modo Comparação
-// ──────────────────────────────────────────────
 
 async function runComparison() {
   if (isRunning) return;
@@ -303,7 +241,6 @@ async function runComparison() {
   addLogEntry('info', '<div class="log-entry-header"><i data-lucide="microscope"></i> Modo Comparação: Executando ambas heurísticas...</div>');
   addLogDivider();
 
-  // ── Execução 1: Heurística Original ──
   addLogEntry('info', '<div class="log-entry-header"><i data-lucide="folder-git-2"></i> EXECUÇÃO 1: Heurística Original</div>');
   
   initGraph('original');
@@ -328,7 +265,6 @@ async function runComparison() {
   addLogDivider();
   await sleep(1000);
 
-  // ── Execução 2: Heurística Modificada ──
   addLogEntry('info', '<div class="log-entry-header"><i data-lucide="folder-search-2"></i> EXECUÇÃO 2: Heurística Modificada</div>');
   
   initGraph('modified');
@@ -350,7 +286,6 @@ async function runComparison() {
     await animatePath(resultadoModificado.caminho, 200);
   }
 
-  // ── Exibir tabela comparativa ──
   addLogDivider();
   displayComparison(resultadoOriginal, resultadoModificado);
   const comparisonSummary = resultadoModificado || resultadoOriginal;
@@ -359,10 +294,6 @@ async function runComparison() {
   isRunning = false;
   setButtonsEnabled(true, false);
 }
-
-// ──────────────────────────────────────────────
-// Logging
-// ──────────────────────────────────────────────
 
 function clearLog() {
   const log = document.getElementById('log-content');
@@ -385,9 +316,6 @@ function addLogDivider() {
   addLogEntry('divider', '<hr class="log-divider">');
 }
 
-/**
- * Loga um passo da busca com detalhes completos.
- */
 function logStep(number, passo) {
   if (passo.tipo === 'falha') {
     addLogEntry('error', `<div class="log-entry-header"><i data-lucide="x-circle"></i> ${passo.mensagem}</div>`);
@@ -403,7 +331,6 @@ function logStep(number, passo) {
     return;
   }
 
-  // Passo de expansão
   const novosStr = passo.novosEstados.length > 0
     ? passo.novosEstados.map(n => `<span class="tag tag-new"><i data-lucide="plus"></i> ${n.estado} h=${n.h}</span>`).join(' ')
     : '<span class="tag tag-none">nenhum</span>';
@@ -436,10 +363,6 @@ function logStep(number, passo) {
     </div>
   `);
 }
-
-// ──────────────────────────────────────────────
-// Resultados Finais
-// ──────────────────────────────────────────────
 
 function clearResults() {
   const container = document.getElementById('results-content');
@@ -489,10 +412,6 @@ function displayResults(resultados) {
   `;
   lucide.createIcons();
 }
-
-// ──────────────────────────────────────────────
-// Tabela Comparativa
-// ──────────────────────────────────────────────
 
 function displayComparison(res1, res2) {
   if (!res1 || !res2) {
@@ -572,13 +491,8 @@ function displayComparison(res1, res2) {
 
   lucide.createIcons();
   
-  // Scroll para a seção de comparação
   document.getElementById('comparison-section').scrollIntoView({ behavior: 'smooth' });
 }
-
-// ──────────────────────────────────────────────
-// Utilitários
-// ──────────────────────────────────────────────
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -588,5 +502,4 @@ function setButtonsEnabled(enabled, showStop) {
   document.getElementById('btn-auto').disabled = !enabled;
   document.getElementById('btn-step').disabled = !enabled;
   document.getElementById('btn-compare').disabled = !enabled;
-  // Reset sempre habilitado
 }

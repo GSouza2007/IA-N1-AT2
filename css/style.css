@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
-/* Variáveis compartilhadas de cor, tipografia, dimensão e transição. */
 :root {
   --bg-page: #eef1ed;
   --bg-card: #fbfcf8;
@@ -33,19 +32,16 @@
   --transition: 0.22s ease;
 }
 
-/* Normalização para manter o layout previsível entre navegadores. */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* A comparação usa rolagem suave para levar o usuário ao resultado. */
 html {
   scroll-behavior: smooth;
 }
 
-/* Fundo e tipografia base da aplicação. */
 body {
   font-family: 'DM Sans', sans-serif;
   background: var(--bg-page);
@@ -65,14 +61,12 @@ body::after {
   vertical-align: middle;
 }
 
-/* Limita a largura do dashboard e define o espaçamento externo. */
 .app-shell {
   max-width: 1560px;
   margin: 0 auto;
   padding: 28px 28px 48px;
 }
 
-/* Cabeçalho com a identidade e o modo heurístico ativo. */
 .topbar {
   display: flex;
   align-items: center;
@@ -146,7 +140,6 @@ body::after {
   box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.14);
 }
 
-/* Faixa de métricas rápidas da execução. */
 .overview-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -205,7 +198,6 @@ body::after {
   line-height: 1.4;
 }
 
-/* Colunas do conteúdo principal e do painel lateral. */
 .dashboard-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px;
@@ -237,7 +229,6 @@ body::after {
   border-radius: 999px;
 }
 
-/* Superfície comum dos painéis da aplicação. */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
@@ -246,7 +237,6 @@ body::after {
   padding: 16px 16px 15px;
 }
 
-/* Título interno e divisor visual de cada painel. */
 .section-head {
   display: flex;
   align-items: center;
@@ -309,7 +299,6 @@ body::after {
   color: var(--text-secondary);
 }
 
-/* Área do Cytoscape com grade que reforça a leitura espacial. */
 #cy-container {
   width: 100%;
   height: 540px;
@@ -320,7 +309,6 @@ body::after {
   border: 1px solid #cbd8ce;
 }
 
-/* Legenda das classes visuais aplicadas durante a busca. */
 .legend {
   display: flex;
   flex-wrap: wrap;
@@ -372,7 +360,6 @@ body::after {
   width: 100%;
 }
 
-/* Cards criados dinamicamente para o resumo dos resultados. */
 .results-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -443,7 +430,6 @@ body::after {
 
 .path-arrow { color: var(--text-muted); }
 
-/* Tabela e análise do modo de comparação. */
 .comparison-table {
   width: 100%;
   border-collapse: separate;
@@ -536,7 +522,6 @@ body::after {
   margin-top: 2px;
 }
 
-/* Controles de seleção e velocidade da animação. */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -611,7 +596,6 @@ body::after {
   color: var(--text-primary);
 }
 
-/* Ações disponíveis para executar, avançar, resetar e comparar. */
 .btn-group {
   display: flex;
   flex-direction: column;
@@ -663,7 +647,6 @@ body::after {
   box-shadow: 0 7px 16px rgba(30, 48, 44, 0.16);
 }
 
-/* Tabela compacta com os valores h(n) das duas heurísticas. */
 .table-container {
   overflow-x: auto;
 }
@@ -709,7 +692,6 @@ body::after {
   font-weight: 800;
 }
 
-/* Registro rolável dos passos produzidos pelo algoritmo. */
 #log-content {
   max-height: 300px;
   overflow-y: auto;
@@ -787,7 +769,6 @@ body::after {
   font-weight: 800;
 }
 
-/* Em telas médias, o painel lateral passa para baixo do mapa. */
 @media (max-width: 1150px) {
   .dashboard-layout {
     grid-template-columns: 1fr;
@@ -800,7 +781,6 @@ body::after {
   }
 }
 
-/* Em telas menores, cabeçalho e métricas se reorganizam. */
 @media (max-width: 760px) {
   .app-shell {
     padding-left: 14px;
@@ -818,7 +798,6 @@ body::after {
   }
 }
 
-/* Em celulares, métricas ficam em uma coluna e o mapa reduz de altura. */
 @media (max-width: 520px) {
   .overview-strip,
   .results-grid {

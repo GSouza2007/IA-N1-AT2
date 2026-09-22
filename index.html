@@ -6,23 +6,18 @@
   <meta name="description" content="Busca Heurística para rota de emergência urbana — Greedy Best-First Search com visualização interativa do grafo.">
   <title>Busca Heurística — Rota de Emergência Urbana | AT2-IA</title>
 
-  <!-- Tipografia usada pelos textos da interface. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Biblioteca de ícones usada nos controles e estados visuais. -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Biblioteca que desenha e anima o grafo de estados. -->
   <script src="https://unpkg.com/cytoscape@3.30.4/dist/cytoscape.min.js"></script>
 
-  <!-- CSS -->
   <link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body>
   <div class="app-shell">
-    <!-- Identidade do projeto e indicação da heurística ativa. -->
     <header class="topbar">
       <div class="brand-block">
         <div class="brand-mark">
@@ -40,7 +35,6 @@
       </div>
     </header>
 
-    <!-- Indicadores resumidos da execução atual. -->
     <section class="overview-strip" aria-label="Resumo da execução">
       <article class="metric-card">
         <span class="metric-label">Heurística</span>
@@ -64,10 +58,8 @@
       </article>
     </section>
 
-    <!-- Conteúdo principal e painel lateral de controles. -->
     <main class="dashboard-layout">
       <div class="dashboard-main">
-        <!-- Mapa interativo e legenda dos estados da busca. -->
         <section class="card graph-section" id="graph-section">
           <div class="section-head">
             <div class="heading-group">
@@ -88,7 +80,6 @@
           </div>
         </section>
 
-        <!-- Resultado detalhado preenchido pelo app.js. -->
         <section class="card results-section" id="results-section">
           <div class="section-head">
             <div class="heading-group">
@@ -102,7 +93,6 @@
           </div>
         </section>
 
-        <!-- Comparação entre as duas configurações heurísticas. -->
         <section class="card comparison-section" id="comparison-section">
           <div class="section-head">
             <div class="heading-group">
@@ -117,7 +107,6 @@
         </section>
       </div>
 
-      <!-- Controles, tabela de heurísticas e log da execução. -->
       <aside class="dashboard-sidebar">
         <div class="card control-card">
           <div class="section-head compact">
@@ -200,15 +189,11 @@
     </main>
   </div>
 
-  <!-- ═══════════════════════════════════════════ -->
-  <!-- SCRIPTS -->
-  <!-- ═══════════════════════════════════════════ -->
   <script src="js/graph.js?v=4"></script>
   <script src="js/search.js?v=4"></script>
   <script src="js/visualization.js?v=4"></script>
   <script src="js/app.js?v=4"></script>
 
-  <!-- Inicializar Ícones -->
   <script>
     lucide.createIcons();
   </script>
