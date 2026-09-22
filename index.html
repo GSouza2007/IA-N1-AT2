@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Busca Heurística para rota de emergência urbana — Greedy Best-First Search com visualização interativa do grafo.">
+  <title>Busca Heurística — Rota de Emergência Urbana | AT2-IA</title>
+
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Cytoscape.js (CDN) -->
+  <script src="https://unpkg.com/cytoscape@3.30.4/dist/cytoscape.min.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css?v=4">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <div class="brand-mark">
+          <i data-lucide="activity"></i>
+        </div>
+        <div>
+          <p class="eyebrow">AT2 • Inteligência Artificial</p>
+          <h1>Busca Heurística — Rota de Emergência</h1>
+        </div>
+      </div>
+
+      <div class="status-pill" aria-live="polite">
+        <span class="status-dot"></span>
+        <span>Heurística ativa: <strong id="status-heuristic">Original</strong></span>
+      </div>
+    </header>
+
+    <section class="overview-strip" aria-label="Resumo da execução">
+      <article class="metric-card">
+        <span class="metric-label">Heurística</span>
+        <strong id="summary-heuristic">Original</strong>
+        <small id="summary-heuristic-subtitle">Busca padrão</small>
+      </article>
+      <article class="metric-card">
+        <span class="metric-label">Caminho</span>
+        <strong id="summary-path">—</strong>
+        <small>Origem → Destino</small>
+      </article>
+      <article class="metric-card">
+        <span class="metric-label">Visitados</span>
+        <strong id="summary-visited">0</strong>
+        <small>Estados processados</small>
+      </article>
+      <article class="metric-card accent-card">
+        <span class="metric-label">Status</span>
+        <strong id="summary-status">Pronto</strong>
+        <small id="summary-status-detail">Aguardando nova execução</small>
+      </article>
+    </section>
+
+    <main class="dashboard-layout">
+      <div class="dashboard-main">
+        <section class="card graph-section" id="graph-section">
+          <div class="section-head">
+            <div class="heading-group">
+              <span class="icon-badge"><i data-lucide="map"></i></span>
+              <h2>Mapa da Cidade</h2>
+            </div>
+            <div class="section-pill">Grafo de Estados</div>
+          </div>
+          <div id="cy-container"></div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot inicio"></div> Origem (Base)</div>
+            <div class="legend-item"><div class="legend-dot objetivo"></div> Objetivo (Hospital)</div>
+            <div class="legend-item"><div class="legend-dot beco"></div> Beco sem saída</div>
+            <div class="legend-item"><div class="legend-dot expandindo"></div> Expandindo</div>
+            <div class="legend-item"><div class="legend-dot aberto"></div> Disponível</div>
+            <div class="legend-item"><div class="legend-dot visitado"></div> Visitado</div>
+            <div class="legend-item"><div class="legend-dot caminho"></div> Caminho final</div>
+          </div>
+        </section>
+
+        <section class="card results-section" id="results-section">
+          <div class="section-head">
+            <div class="heading-group">
+              <span class="icon-badge"><i data-lucide="flag"></i></span>
+              <h2>Resultados da Busca</h2>
+            </div>
+            <div class="section-pill success">Resumo</div>
+          </div>
+          <div id="results-content">
+            <p class="placeholder">Execute a busca para ver os resultados.</p>
+          </div>
+        </section>
+
+        <section class="card comparison-section" id="comparison-section">
+          <div class="section-head">
+            <div class="heading-group">
+              <span class="icon-badge"><i data-lucide="git-compare"></i></span>
+              <h2>Comparação — Original vs Modificada</h2>
+            </div>
+            <div class="section-pill neutral">Análise</div>
+          </div>
+          <div id="comparison-content">
+            <p class="placeholder">Clique em "Comparar Heurísticas" no painel de controle para executar ambas e ver a análise.</p>
+          </div>
+        </section>
+      </div>
+
+      <aside class="dashboard-sidebar">
+        <div class="card control-card">
+          <div class="section-head compact">
+            <div class="heading-group">
+              <span class="icon-badge"><i data-lucide="sliders"></i></span>
+              <h2>Painel de Controle</h2>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="heuristic-select">Heurística Utilizada</label>
+            <div class="select-wrapper">
+              <select class="form-select" id="heuristic-select">
+                <option value="original">Original (Padrão)</option>
+                <option value="modified">Modificada (Teste de Engano)</option>
+              </select>
+              <i data-lucide="chevron-down" class="select-icon"></i>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Velocidade da Animação</label>
+            <div class="speed-control">
+              <i data-lucide="snail"></i>
+              <input type="range" id="speed-range" min="100" max="1500" value="600" step="50">
+              <i data-lucide="rabbit"></i>
+              <span id="speed-value">600ms</span>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" id="btn-auto">
+              <i data-lucide="play"></i> Executar Automático
+            </button>
+            <button class="btn btn-secondary" id="btn-step">
+              <i data-lucide="step-forward"></i> Passo a Passo
+            </button>
+            <button class="btn btn-warning" id="btn-reset">
+              <i data-lucide="rotate-ccw"></i> Reset
+            </button>
+            <button class="btn btn-accent" id="btn-compare">
+              <i data-lucide="microscope"></i> Comparar Heurísticas
+            </button>
+          </div>
+        </div>
+
+        <div class="card heuristic-card">
+          <div class="section-head compact">
+            <div class="heading-group">
+              <span class="icon-badge"><i data-lucide="table-2"></i></span>
+              <h2>Valores Heurísticos h(n)</h2>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="heuristic-table">
+              <thead>
+                <tr>
+                  <th>Estado</th>
+                  <th>Orig.</th>
+                  <th>Mod.</th>
+                </tr>
+              </thead>
+              <tbody id="heuristic-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card log-section" id="log-section">
+          <div class="section-head compact">
+            <div class="heading-group">
+              <span class="icon-badge"><i data-lucide="list-tree"></i></span>
+              <h2>Log de Execução</h2>
+            </div>
+          </div>
+          <div id="log-content">
+            <p class="placeholder">Aguardando execução...</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SCRIPTS -->
+  <!-- ═══════════════════════════════════════════ -->
+  <script src="js/graph.js?v=4"></script>
+  <script src="js/search.js?v=4"></script>
+  <script src="js/visualization.js?v=4"></script>
+  <script src="js/app.js?v=4"></script>
+
+  <!-- Inicializar Ícones -->
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
