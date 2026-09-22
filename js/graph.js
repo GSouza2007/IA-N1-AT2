@@ -1,6 +1,8 @@
+// Define o ponto de partida e o destino usados em todas as execuções.
 const ESTADO_INICIAL = 'Base';
 const ESTADO_OBJETIVO = 'Hospital';
 
+// Guarda as coordenadas fixas usadas pelo layout preset do Cytoscape.
 const NODE_POSITIONS = {
   'Base': { x: 100, y: 100 },
   'Centro': { x: 300, y: 80 },
@@ -16,21 +18,23 @@ const NODE_POSITIONS = {
   'Hospital': { x: 680, y: 560 },
 };
 
+// Valores da estimativa considerada coerente com a posição dos estados.
 const HEURISTICS_ORIGINAL = {
   'Base': 18,
   'Rodoviária': 15,
   'Aeroporto': 14,
-  'Centro': 13,
+  'Centro': 10,
   'Estádio': 12,
   'Terminal': 11,
-  'Parque': 10,
+  'Parque': 7,
   'Shopping': 9,
-  'Universidade': 7,
+  'Universidade': 5,
   'Praça': 6,
   'Ponte': 4,
   'Hospital': 0,
 };
 
+// Altera três valores para direcionar a busca por uma região diferente do grafo.
 const HEURISTICS_MODIFIED = {
   'Base': 18,
   'Rodoviária': 15,
@@ -38,14 +42,15 @@ const HEURISTICS_MODIFIED = {
   'Centro': 4,
   'Estádio': 12,
   'Terminal': 11,
-  'Parque': 16,
+  'Parque': 13,
   'Shopping': 3,
-  'Universidade': 7,
+  'Universidade': 11,
   'Praça': 6,
   'Ponte': 4,
   'Hospital': 0,
 };
 
+// Lista de adjacência: cada estado aponta para os destinos diretamente acessíveis.
 const ADJACENCY_LIST = {
   'Base': ['Centro', 'Rodoviária', 'Parque'],
   'Centro': ['Aeroporto', 'Shopping'],
@@ -61,26 +66,32 @@ const ADJACENCY_LIST = {
   'Hospital': [],
 };
 
+// Retorna os destinos de um estado ou uma lista vazia para estados desconhecidos.
 function getVizinhos(estado) {
   return ADJACENCY_LIST[estado] || [];
 }
 
+// Retorna os nomes dos estados na ordem em que foram cadastrados no grafo.
 function getAllEstados() {
   return Object.keys(ADJACENCY_LIST);
 }
 
+// Consulta a posição visual de um estado.
 function getPosition(estado) {
   return NODE_POSITIONS[estado];
 }
 
+// Identifica se o estado recebido é o destino da busca.
 function isObjetivo(estado) {
   return estado === ESTADO_OBJETIVO;
 }
 
+// Diferencia um beco sem saída do Hospital, que também não possui sucessores.
 function isBecoSemSaida(estado) {
   return ADJACENCY_LIST[estado] && ADJACENCY_LIST[estado].length === 0 && estado !== ESTADO_OBJETIVO;
 }
 
+// Converte a lista de adjacência em pares de origem e destino para o Cytoscape.
 function getAllEdges() {
   const edges = [];
   for (const [origem, vizinhos] of Object.entries(ADJACENCY_LIST)) {
@@ -91,10 +102,12 @@ function getAllEdges() {
   return edges;
 }
 
+// Conta caminhos simples entre dois estados usando busca em profundidade.
 function countPaths(start, end) {
   let count = 0;
   const visited = new Set();
 
+  // Explora cada ramo sem repetir estados no caminho atual.
   function dfs(current) {
     if (current === end) {
       count++;

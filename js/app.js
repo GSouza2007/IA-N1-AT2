@@ -6,28 +6,34 @@ let resultadoOriginal = null;
 let resultadoModificado = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  // A interface começa sempre com o grafo e a heurística original.
   initGraph('original');
   updateDashboardSummary();
-  
+
+  // Cada botão inicia um fluxo diferente da aplicação.
   document.getElementById('btn-auto').addEventListener('click', runAutomatic);
   document.getElementById('btn-step').addEventListener('click', runStep);
   document.getElementById('btn-reset').addEventListener('click', resetAll);
   document.getElementById('btn-compare').addEventListener('click', runComparison);
 
+  // Trocar a heurística reinicia o mapa para evitar misturar execuções.
   document.getElementById('heuristic-select').addEventListener('change', (e) => {
     currentHeuristic = e.target.value;
     resetAll();
   });
 
+  // O slider controla o intervalo usado nas animações do grafo.
   document.getElementById('speed-range').addEventListener('input', (e) => {
     animationSpeed = parseInt(e.target.value);
     document.getElementById('speed-value').textContent = `${animationSpeed}ms`;
   });
 
+  // A tabela é independente da execução e é montada uma única vez.
   renderHeuristicTable();
 });
 
 function updateDashboardSummary(resultados = null) {
+  // Mantém os indicadores do cabeçalho sincronizados com a busca.
   const label = currentHeuristic === 'original' ? 'Original' : 'Modificada';
   const heuristicText = document.getElementById('summary-heuristic');
   const heuristicSub = document.getElementById('summary-heuristic-subtitle');
@@ -37,12 +43,14 @@ function updateDashboardSummary(resultados = null) {
   const statusText = document.getElementById('summary-status');
   const statusDetail = document.getElementById('summary-status-detail');
 
+  // Atualiza o nome da heurística tanto no cabeçalho quanto no resumo.
   if (heuristicText) heuristicText.textContent = label;
   if (statusHeuristic) statusHeuristic.textContent = label;
   if (heuristicSub) {
     heuristicSub.textContent = currentHeuristic === 'original' ? 'Busca padrão' : 'Teste de engano';
   }
 
+  // Exibe métricas diferentes conforme a busca esteja pronta, concluída ou falha.
   if (resultados && resultados.encontrou) {
     pathText.textContent = resultados.caminho.length ? `${resultados.caminho.length} etapas` : 'Encontrado';
     visitedText.textContent = String(resultados.quantidadeVisitados || 0);
@@ -62,11 +70,13 @@ function updateDashboardSummary(resultados = null) {
 }
 
 function initGraph(type) {
+  // Seleciona o conjunto de valores que será exibido nos nós.
   const heuristics = type === 'original' ? HEURISTICS_ORIGINAL : HEURISTICS_MODIFIED;
   initCytoscape('cy-container', heuristics);
 }
 
 function getActiveHeuristics() {
+  // Mantém o algoritmo alinhado ao seletor visível na interface.
   return currentHeuristic === 'original' ? HEURISTICS_ORIGINAL : HEURISTICS_MODIFIED;
 }
 
@@ -74,6 +84,7 @@ function renderHeuristicTable() {
   const tbody = document.getElementById('heuristic-tbody');
   if (!tbody) return;
   
+  // Ordena os estados pela heurística original para facilitar a comparação.
   tbody.innerHTML = '';
   const estados = getAllEstados().sort((a, b) => {
     const hA = HEURISTICS_ORIGINAL[a];
@@ -82,6 +93,7 @@ function renderHeuristicTable() {
   });
 
   for (const estado of estados) {
+    // Marca visualmente os valores alterados na heurística modificada.
     const tr = document.createElement('tr');
     const hOrig = HEURISTICS_ORIGINAL[estado];
     const hMod = HEURISTICS_MODIFIED[estado];
@@ -98,6 +110,7 @@ function renderHeuristicTable() {
 }
 
 function getEstadoIcon(estado) {
+  // Relaciona cada local urbano a um ícone coerente com sua função.
   const icons = {
     'Base': '<i data-lucide="ambulance"></i>', 
     'Centro': '<i data-lucide="building-2"></i>', 
@@ -117,16 +130,20 @@ function getEstadoIcon(estado) {
 
 async function runAutomatic() {
   if (isRunning) return;
-  
+
+  // Garante que uma execução automática sempre comece do estado inicial.
   resetAll();
   await sleep(200);
   
+  // Bloqueia ações concorrentes enquanto a animação está rodando.
   isRunning = true;
   setButtonsEnabled(false, true);
   
+  // Cria o motor com a heurística atualmente selecionada.
   const heuristics = getActiveHeuristics();
   currentSearch = new HeuristicSearch(heuristics, ESTADO_INICIAL, ESTADO_OBJETIVO);
   
+  // Registra no painel os parâmetros usados nesta execução.
   clearLog();
   addLogEntry('info', `<div class="log-entry-header"><i data-lucide="rocket"></i> Iniciando Busca Heurística (${currentHeuristic === 'original' ? 'Original' : 'Modificada'})</div>`);
   addLogEntry('info', `<div class="log-entry-header"><i data-lucide="map-pin"></i> Origem: ${ESTADO_INICIAL} | <i data-lucide="target"></i> Destino: ${ESTADO_OBJETIVO}</div>`);
@@ -136,6 +153,7 @@ async function runAutomatic() {
   let stepCount = 0;
 
   while (!currentSearch.finalizado) {
+    // O algoritmo calcula um passo e a interface o reproduz visualmente.
     const passo = currentSearch.step();
     stepCount++;
 
@@ -147,10 +165,12 @@ async function runAutomatic() {
     logStep(stepCount, passo);
   }
 
+  // Após o último passo, os dados são renderizados nos cartões de resultado.
   const resultados = currentSearch.getResultados();
   displayResults(resultados);
   updateDashboardSummary(resultados);
 
+  // A rota final é animada somente quando o objetivo foi alcançado.
   if (resultados.encontrou) {
     addLogDivider();
     addLogEntry('success', `<div class="log-entry-header"><i data-lucide="flag"></i> Caminho encontrado!</div>`);
@@ -158,6 +178,7 @@ async function runAutomatic() {
     await animatePath(resultados.caminho, 300);
   }
 
+  // Guarda o resultado para o modo de comparação posterior.
   if (currentHeuristic === 'original') {
     resultadoOriginal = resultados;
   } else {
@@ -173,6 +194,7 @@ let stepCounter = 0;
 async function runStep() {
   if (isRunning) return;
 
+  // O primeiro clique cria a busca; os próximos apenas avançam um passo.
   if (!currentSearch || currentSearch.finalizado) {
     const heuristics = getActiveHeuristics();
     currentSearch = new HeuristicSearch(heuristics, ESTADO_INICIAL, ESTADO_OBJETIVO);
@@ -189,6 +211,7 @@ async function runStep() {
     return;
   }
 
+  // A execução passo a passo também bloqueia cliques simultâneos.
   isRunning = true;
   const passo = currentSearch.step();
   stepCounter++;
@@ -218,12 +241,15 @@ async function runStep() {
 }
 
 function resetAll() {
+  // Descarta o motor atual e limpa os contadores da execução.
   currentSearch = null;
   stepCounter = 0;
   isRunning = false;
 
+  // Reconstrói o grafo usando o modo que está selecionado.
   initGraph(currentHeuristic === 'original' ? 'original' : 'modified');
 
+  // Limpa todas as áreas dinâmicas da interface.
   clearLog();
   clearResults();
   updateDashboardSummary();
@@ -234,6 +260,7 @@ function resetAll() {
 
 async function runComparison() {
   if (isRunning) return;
+  // O modo comparação executa as duas configurações em sequência.
   isRunning = true;
   setButtonsEnabled(false, false);
 
@@ -241,6 +268,7 @@ async function runComparison() {
   addLogEntry('info', '<div class="log-entry-header"><i data-lucide="microscope"></i> Modo Comparação: Executando ambas heurísticas...</div>');
   addLogDivider();
 
+  // Primeira execução: valores heurísticos originais.
   addLogEntry('info', '<div class="log-entry-header"><i data-lucide="folder-git-2"></i> EXECUÇÃO 1: Heurística Original</div>');
   
   initGraph('original');
@@ -248,6 +276,7 @@ async function runComparison() {
   let step1 = 0;
   
   while (!search1.finalizado) {
+    // Registra cada passo da primeira busca no mesmo log.
     const passo = search1.step();
     step1++;
     if (passo) {
@@ -265,6 +294,7 @@ async function runComparison() {
   addLogDivider();
   await sleep(1000);
 
+  // Segunda execução: valores modificados para produzir um caminho diferente.
   addLogEntry('info', '<div class="log-entry-header"><i data-lucide="folder-search-2"></i> EXECUÇÃO 2: Heurística Modificada</div>');
   
   initGraph('modified');
@@ -286,6 +316,7 @@ async function runComparison() {
     await animatePath(resultadoModificado.caminho, 200);
   }
 
+  // Só exibe a comparação quando as duas execuções terminaram.
   addLogDivider();
   displayComparison(resultadoOriginal, resultadoModificado);
   const comparisonSummary = resultadoModificado || resultadoOriginal;
@@ -296,11 +327,13 @@ async function runComparison() {
 }
 
 function clearLog() {
+  // Remove as entradas anteriores antes de iniciar uma nova execução.
   const log = document.getElementById('log-content');
   if (log) log.innerHTML = '';
 }
 
 function addLogEntry(type, message) {
+  // Cria uma entrada segura de estilizar por tipo de evento.
   const log = document.getElementById('log-content');
   if (!log) return;
 
@@ -313,10 +346,12 @@ function addLogEntry(type, message) {
 }
 
 function addLogDivider() {
+  // Insere uma separação visual entre fases ou experimentos.
   addLogEntry('divider', '<hr class="log-divider">');
 }
 
 function logStep(number, passo) {
+  // Converte o objeto retornado pelo algoritmo em conteúdo legível.
   if (passo.tipo === 'falha') {
     addLogEntry('error', `<div class="log-entry-header"><i data-lucide="x-circle"></i> ${passo.mensagem}</div>`);
     return;
@@ -365,12 +400,14 @@ function logStep(number, passo) {
 }
 
 function clearResults() {
+  // Volta a área de resultados ao estado inicial vazio.
   const container = document.getElementById('results-content');
   if (container) container.innerHTML = '<p class="placeholder"><i data-lucide="ghost"></i> Execute a busca para ver os resultados.</p>';
   lucide.createIcons();
 }
 
 function displayResults(resultados) {
+  // Monta os cartões com caminho, visitas e expansões da execução.
   const container = document.getElementById('results-content');
   if (!container) return;
 
@@ -414,6 +451,7 @@ function displayResults(resultados) {
 }
 
 function displayComparison(res1, res2) {
+  // Compara caminhos e métricas produzidos pelas duas heurísticas.
   if (!res1 || !res2) {
     addLogEntry('warning', '<div class="log-entry-header"><i data-lucide="alert-triangle"></i> Execute ambas as heurísticas antes de comparar.</div>');
     return;
@@ -422,6 +460,7 @@ function displayComparison(res1, res2) {
   const container = document.getElementById('comparison-content');
   if (!container) return;
 
+  // Calcula quais critérios mudaram para alimentar a coluna de análise.
   const caminho1 = res1.encontrou ? res1.caminho.join(' → ') : 'Não encontrado';
   const caminho2 = res2.encontrou ? res2.caminho.join(' → ') : 'Não encontrado';
   const visita1 = res1.ordemVisita.join(' → ');
@@ -432,6 +471,7 @@ function displayComparison(res1, res2) {
   const qtdVisitMudou = res1.quantidadeVisitados !== res2.quantidadeVisitados;
   const qtdExpMudou = res1.quantidadeExpandidos !== res2.quantidadeExpandidos;
 
+  // Atualiza a tabela e a interpretação textual do experimento.
   container.innerHTML = `
     <table class="comparison-table">
       <thead>
@@ -483,7 +523,7 @@ function displayComparison(res1, res2) {
           ? `A heurística ${res1.quantidadeVisitados <= res2.quantidadeVisitados ? 'original' : 'modificada'} foi mais eficiente, visitando ${Math.min(res1.quantidadeVisitados, res2.quantidadeVisitados)} estados contra ${Math.max(res1.quantidadeVisitados, res2.quantidadeVisitados)}.`
           : 'Ambas tiveram a mesma eficiência em termos de estados visitados.'}</li>
         <li><i data-lucide="info"></i> <strong>Direcionamento:</strong> ${visitaMudou 
-          ? 'A heurística modificada, ao reduzir o h(n) do Centro e Shopping (tornando-os mais atrativos) e aumentar o h(n) do Parque, direcionou a busca para o caminho enganoso antes de encontrar a rota correta.'
+          ? 'A heurística modificada reduziu o h(n) do Centro e aumentou os valores do Parque e da Universidade, direcionando a busca para o caminho alternativo pela região do Shopping.'
           : 'As modificações não alteraram significativamente o direcionamento da busca.'}</li>
       </ul>
     </div>
@@ -495,10 +535,12 @@ function displayComparison(res1, res2) {
 }
 
 function sleep(ms) {
+  // Padroniza as pausas usadas pelas animações assíncronas.
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function setButtonsEnabled(enabled, showStop) {
+  // Impede novas execuções enquanto uma animação está em andamento.
   document.getElementById('btn-auto').disabled = !enabled;
   document.getElementById('btn-step').disabled = !enabled;
   document.getElementById('btn-compare').disabled = !enabled;

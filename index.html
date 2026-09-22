@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- Metadados básicos para idioma, responsividade e identificação da página. -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Busca Heurística para rota de emergência urbana — Greedy Best-First Search com visualização interativa do grafo.">
@@ -17,7 +18,9 @@
   <link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body>
+  <!-- Contêiner que centraliza todo o dashboard. -->
   <div class="app-shell">
+    <!-- Identidade do projeto e status da heurística ativa. -->
     <header class="topbar">
       <div class="brand-block">
         <div class="brand-mark">
@@ -35,6 +38,7 @@
       </div>
     </header>
 
+    <!-- Métricas atualizadas pelo app.js durante cada execução. -->
     <section class="overview-strip" aria-label="Resumo da execução">
       <article class="metric-card">
         <span class="metric-label">Heurística</span>
@@ -58,8 +62,10 @@
       </article>
     </section>
 
+    <!-- Layout principal com conteúdo visual e painel de ferramentas. -->
     <main class="dashboard-layout">
       <div class="dashboard-main">
+        <!-- Grafo interativo e legenda dos estados. -->
         <section class="card graph-section" id="graph-section">
           <div class="section-head">
             <div class="heading-group">
@@ -68,6 +74,7 @@
             </div>
             <div class="section-pill">Grafo de Estados</div>
           </div>
+          <!-- Cytoscape insere o grafo neste elemento. -->
           <div id="cy-container"></div>
           <div class="legend">
             <div class="legend-item"><div class="legend-dot inicio"></div> Origem (Base)</div>
@@ -80,6 +87,7 @@
           </div>
         </section>
 
+        <!-- Resultados detalhados da busca selecionada. -->
         <section class="card results-section" id="results-section">
           <div class="section-head">
             <div class="heading-group">
@@ -93,6 +101,7 @@
           </div>
         </section>
 
+        <!-- Resultado comparativo entre as duas heurísticas. -->
         <section class="card comparison-section" id="comparison-section">
           <div class="section-head">
             <div class="heading-group">
@@ -107,7 +116,9 @@
         </section>
       </div>
 
+      <!-- Controles de execução, tabela heurística e histórico de passos. -->
       <aside class="dashboard-sidebar">
+        <!-- Seleção do modo, velocidade e ações principais. -->
         <div class="card control-card">
           <div class="section-head compact">
             <div class="heading-group">
@@ -153,6 +164,7 @@
           </div>
         </div>
 
+        <!-- Tabela preenchida dinamicamente com h(n). -->
         <div class="card heuristic-card">
           <div class="section-head compact">
             <div class="heading-group">
@@ -174,6 +186,7 @@
           </div>
         </div>
 
+        <!-- Log incremental de decisões e eventos da busca. -->
         <div class="card log-section" id="log-section">
           <div class="section-head compact">
             <div class="heading-group">
@@ -189,6 +202,7 @@
     </main>
   </div>
 
+  <!-- A ordem dos scripts respeita as dependências entre dados, busca e interface. -->
   <script src="js/graph.js?v=4"></script>
   <script src="js/search.js?v=4"></script>
   <script src="js/visualization.js?v=4"></script>

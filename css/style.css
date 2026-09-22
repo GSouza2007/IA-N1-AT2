@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 :root {
+  /* Tokens visuais compartilhados entre os componentes da tela. */
   --bg-page: #eef1ed;
   --bg-card: #fbfcf8;
   --bg-card-strong: #ffffff;
@@ -32,16 +33,19 @@
   --transition: 0.22s ease;
 }
 
+/* Remove diferenças padrão de box model, margens e preenchimentos. */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* Mantém a navegação suave entre a comparação e seus resultados. */
 html {
   scroll-behavior: smooth;
 }
 
+/* Define a superfície geral da aplicação e a fonte de leitura. */
 body {
   font-family: 'DM Sans', sans-serif;
   background: var(--bg-page);
@@ -49,11 +53,13 @@ body {
   min-height: 100vh;
 }
 
+/* Os pseudo-elementos decorativos permanecem desativados no tema atual. */
 body::before,
 body::after {
   display: none;
 }
 
+/* Ajuste comum para os ícones inseridos pelo Lucide. */
 .lucide {
   width: 1.1em;
   height: 1.1em;
@@ -61,12 +67,14 @@ body::after {
   vertical-align: middle;
 }
 
+/* Área externa que limita a largura e cria espaçamento ao redor do painel. */
 .app-shell {
   max-width: 1560px;
   margin: 0 auto;
   padding: 28px 28px 48px;
 }
 
+/* Faixa superior com identidade, título e status atual. */
 .topbar {
   display: flex;
   align-items: center;
@@ -81,12 +89,14 @@ body::after {
   margin-bottom: 20px;
 }
 
+/* Agrupa o símbolo e os textos de identificação do projeto. */
 .brand-block {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
+/* Símbolo visual principal da aplicação. */
 .brand-mark {
   width: 48px;
   height: 48px;
@@ -119,6 +129,7 @@ body::after {
   color: var(--text-primary);
 }
 
+/* Indicador compacto do modo heurístico selecionado. */
 .status-pill {
   display: inline-flex;
   align-items: center;
@@ -140,6 +151,7 @@ body::after {
   box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.14);
 }
 
+/* Grade superior de indicadores resumidos. */
 .overview-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -147,6 +159,7 @@ body::after {
   margin-bottom: 20px;
 }
 
+/* Cartão individual de métrica e sua barra de identificação lateral. */
 .metric-card {
   position: relative;
   overflow: hidden;
@@ -199,12 +212,14 @@ body::after {
 }
 
 .dashboard-layout {
+  /* O mapa ocupa o espaço principal e os controles ficam na lateral. */
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px;
   gap: 18px;
   align-items: start;
 }
 
+/* As duas colunas internas mantêm espaçamento vertical consistente. */
 .dashboard-main,
 .dashboard-sidebar {
   display: flex;
@@ -212,6 +227,7 @@ body::after {
   gap: 18px;
 }
 
+/* Mantém os controles visíveis durante a rolagem em telas grandes. */
 .dashboard-sidebar {
   position: sticky;
   top: 16px;
@@ -229,6 +245,7 @@ body::after {
   border-radius: 999px;
 }
 
+/* Estilo base compartilhado por cada painel do dashboard. */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
@@ -237,6 +254,7 @@ body::after {
   padding: 16px 16px 15px;
 }
 
+/* Cabeçalho reutilizado pelos painéis, com título e etiqueta contextual. */
 .section-head {
   display: flex;
   align-items: center;
@@ -257,6 +275,7 @@ body::after {
   gap: 12px;
 }
 
+/* Fundo do ícone que identifica cada tipo de painel. */
 .icon-badge {
   width: 36px;
   height: 36px;
@@ -309,6 +328,7 @@ body::after {
   border: 1px solid #cbd8ce;
 }
 
+/* Chaves de leitura para as classes visualizadas no grafo. */
 .legend {
   display: flex;
   flex-wrap: wrap;
@@ -354,6 +374,7 @@ body::after {
   font-weight: 500;
 }
 
+/* Regiões preenchidas dinamicamente pelo JavaScript. */
 #results-content,
 #comparison-content,
 #log-content {

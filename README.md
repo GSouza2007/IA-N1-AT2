@@ -16,7 +16,7 @@ A aplicação oferece:
 - comparação entre a heurística original e uma versão propositalmente distorcida;
 - reconstrução e destaque do caminho encontrado.
 
-O cenário possui 12 estados, 16 conexões direcionadas, mais de um caminho possível até o destino, um estado sem saída e um caminho enganoso. Assim, é possível observar tanto uma execução eficiente quanto o efeito de uma estimativa ruim.
+O cenário possui 12 estados, 14 conexões direcionadas, mais de um caminho possível até o destino, um estado sem saída e um caminho enganoso. Assim, é possível observar tanto uma execução eficiente quanto o efeito de uma estimativa ruim.
 
 ## Executar localmente
 
@@ -73,7 +73,7 @@ Na busca gulosa, o próximo estado é escolhido pelo menor valor de $h(n)$ entre
 **Algoritmo:** Greedy Best-First Search<br>
 **Critério de seleção:** menor $h(n)$<br>
 **Desempate:** ordem alfabética
-**Grafo:** 12 estados e 16 arestas direcionadas
+**Grafo:** 12 estados e 14 arestas direcionadas
 
 Na configuração original, a rota encontrada é:
 
